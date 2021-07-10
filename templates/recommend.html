@@ -1,45 +1,96 @@
-<!DOCTYPE doctype html>
-<html lang="en">
-    <head>
-        <!-- Required meta tags -->
-        <meta charset="utf-8">
-            <meta content="width=device-width, initial-scale=1" name="viewport">
-                <!-- Bootstrap CSS -->
-                <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" rel="stylesheet">
-                    <title>
-                        BootStrap Tut
-                    </title>
-                </link>
-            </meta>
-        </meta>
-    </head>
-    <body>
-        <nav class="navbar navbar-light bg-light">
-            <div class="container">
-                <div class="container align-content-center">
-                    <a class="navbar-brand text-primary" href="/">
-                        MovieFlix
-                    </a>
-                </div>
-                <div class="container-fluid">
-                    <form class="d-flex">
-                        <input aria-label="Search" class="form-control me-2" placeholder="Enter Movie Name" type="search">
-                            <button class="btn btn-outline-success" type="submit">
-                                Search
-                            </button>
-                        </input>
-                    </form>
+{% extends "layout.html" %}
+
+{% block body %}
+
+<nav class="navbar navbar-light bg-light">
+    <div class="container">
+        <div class="container align-content-center">
+            <a class="navbar-brand text-primary" href="/">
+                MovieFlix
+            </a>
+        </div>
+        <div class="container-fluid">
+            <form class="d-flex">
+                <input aria-label="Search" class="form-control me-2" placeholder="Enter Movie Name" type="search">
+                <button class="btn btn-outline-success" type="submit">
+                    Search
+                </button>
+                </input>
+            </form>
+        </div>
+    </div>
+</nav>
+<section style="background: rgb(172,175,183); height: 80vh;">
+    <div class="modal-body row">
+        <div class="col-md-6 text-center">
+            <img src=" {{img_path}}" width="550" height="500"
+                style="padding-left: 10px; padding-right: 100px; padding-bottom: 0px; padding-top: 30px;border-radius: 5px;margin-bottom: 10px;">
+        </div>
+        <div class="col-md-6 text-center">
+            <h2 style="color: white; text-align: center;padding-right: 100px; padding-top: 80px;margin-left: -45%">
+                {{movie_name}} ({{movie_year}}) {{language}}</h2>
+            <div class="facts"
+                style="color: white;text-align: center;padding-right: 100px; padding-top: 0px;margin-left: -85%">
+                <ul><b>Date : {{release_date}}</b></ul>
+                <ul><b>Duration : {{runtime}}</b></ul>
+                <ul><b>Genre : {{genre}}</b></ul>
+                <ul><b>Rating : {{rating}}({{vote_count}} votes) </b></ul>
+                <ul><b>
+                        <p style="margin-left: 40%;">{{overview}}</p>
+                </ul></b>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="album py-5 bg-light">
+    <div class="container">
+        <centre>
+            <h3 style="padding-bottom: 2%;">Recommendations</h3>
+        </centre>
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+            <div class="col">
+                <div class="card shadow-sm">
+                    <img class="bd-placeholder-img card-img-top" width="100%" height="400" src="{{img_path}}" alt="..."
+                        role="img">
+
+                    <div class="card-body">
+                        <h3 class="card-text">{{movie_name}}</h3>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <a href="#" style="color: greenyellow;" class="stretched-link">{{rating}}</a>
+                            <small class="text-muted">{{runtime}}</small>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </nav>
-    </body>
-</html>
-<!-- Optional JavaScript; choose one of the two! -->
-<!-- Option 1: Bootstrap Bundle with Popper -->
-<script crossorigin="anonymous" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js">
-</script>
-<!-- Option 2: Separate Popper and Bootstrap JS -->
-<!--
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
-    -->
+            <div class="col">
+                <div class="card shadow-sm">
+                    <img class="bd-placeholder-img card-img-top" width="100%" height="400" src="{{img_path}}" alt="..."
+                        role="img">
+                    <div class="card-body">
+                        <h3 class="card-text">{{movie_name}}</h3>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <a href="#" style="color: greenyellow;" class="stretched-link">{{rating}}</a>
+                            <small class="text-muted">{{runtime}}</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card shadow-sm">
+                    <img class="bd-placeholder-img card-img-top" width="100%" height="400" src="{{img_path}}" alt="...">
+
+                    <div class="card-body">
+                        <h3 class="card-text">{{movie_name}}</h3>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <a href="#" style="color: greenyellow;" class="stretched-link">{{rating}}</a>
+                            <small class="text-muted">{{runtime}}</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
