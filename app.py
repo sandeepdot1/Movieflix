@@ -75,123 +75,61 @@ def movie_runtime(duration):
 def home():
     return render_template("index.html")
 
-@app.route("/recommend",methods=["POST"])
+@app.route("/recommend",methods=["GET","POST"])
 def recommend():
-    movie_name = request.form.get("movie_name")
-    recommended_movies = find_recommendation(movie_name, data)
-    movie_name = movie_name.upper()
-    if type(recommended_movies) == type('string'): # no such movie found in the database
-        return redirect("/")
-    else:
-        tmdb_movie_object = Movie()
-        result = tmdb_movie_object.search(movie_name)
-
-        # get movie id and movie title
-        movie_id = result[0].id
-        movie_title = result[0].title
-
-        # making API call
-        response = requests.get('https://api.themoviedb.org/3/movie/{}?api_key={}'.format(movie_id,tmdb.api_key))
-        movie_json = response.json()
-
-        imdb_id = movie_json['imdb_id']
-        poster_path = movie_json['poster_path']
-        img_path = 'https://image.tmdb.org/t/p/original{}'.format(poster_path)
-        movie_name = movie_json['title']
-        language = movie_json['original_language']
-        overview = movie_json['overview']
-
-        # getting list of genres form json
-        genre = list_of_genres(movie_json['genres'])
-
-        # getting votes with comma as thousands separators
-        rating = movie_json['vote_average']
-        vote_count = "{:,}".format(movie_json['vote_count'])
+    if request.method == "POST":
+        movie_name = request.form.get("movie_name")
+        recommended_movies = find_recommendation(movie_name, data)
+        movie_name = movie_name.upper()
         
-        # convert date to readable format (eg. 10-06-2019 to June 10 2019)
-        release_day,release_month,release_year = date_convert(movie_json['release_date'])
-        release_date = "{} {},{}".format(release_month,release_day,release_year)
+        if type(recommended_movies) == type('string'):
+            return redirect("/")
+        else:
+            tmdb_movie_object = Movie()
+            movie_list = tmdb_movie_object.search(movie_name)
 
-        # getting the status of the movie (released or not)
-        release_status = movie_json['status']
+            # get movie id and movie title
+            movie_id = movie_list[0].id
 
-        # convert minutes to hours minutes (eg. 148 minutes to 2 hours 28 mins)
-        runtime = movie_runtime(movie_json['runtime'])
+            # making API call
+            response = requests.get('https://api.themoviedb.org/3/movie/{}?api_key={}'.format(movie_id,tmdb.api_key))
+            movie_json = response.json()
 
-        return render_template('recommend.html', movie_name=movie_name, language=language,movie_year=release_year, 
-        img_path=img_path, rating=rating, overview=overview, release_date=release_date, genre=genre, vote_count=vote_count, 
-        release_status=release_status, runtime=runtime)
-        
+            poster_path = movie_json['poster_path']
+            img_path = 'https://image.tmdb.org/t/p/original{}'.format(poster_path)
+            movie_name = movie_json['title']
+            lang = movie_json['original_language']
+            overview = movie_json['overview']
+            genre = list_of_genres(movie_json['genres'])
+            rating = movie_json['vote_average']
+            vote_count = "{:,}".format(movie_json['vote_count'])
+            release_day,release_month,release_year = date_convert(movie_json['release_date'])
+            release_date = "{} {},{}".format(release_month,release_day,release_year)
+            release_status = movie_json['status']
+            runtime = movie_runtime(movie_json['runtime'])
 
+            recommended_list = []
+
+            for movie_title in recommended_movies:
+                movie_dict = {}
+                result = tmdb_movie_object.search(movie_title)
+                movie_id = result[0].id
+                responses = requests.get('https://api.themoviedb.org/3/movie/{}?api_key={}'.format(movie_id,tmdb.api_key))
+                movies_json = responses.json()
+                movie_dict['Movie_name'] = movies_json['title']
+                movie_dict['Duration'] = movie_runtime(movies_json['runtime'])
+                movie_dict['Rating'] = movies_json['vote_average']
+                images = 'https://image.tmdb.org/t/p/original{}'.format(movies_json['poster_path'])
+                movie_dict['Image'] = images
+                r_day,r_month,r_year = date_convert(movies_json['release_date'])
+                movie_dict['Year'] = r_year
+                recommended_list.append(movie_dict)
+
+            return render_template('recommend.html', movie_name=movie_name, language=lang, movie_year=release_year, 
+            img_path=img_path, rating=rating, overview=overview, release_date=release_date, genre=genre, vote_count=vote_count, 
+            release_status=release_status, runtime=runtime, recommended_movies=recommended_movies, result_list=recommended_list)
+    
 
 if __name__ == "__main__":
     app.run(debug=True)
 
-
-
-
-
-    # movie_name = "avatar"
-    # recommended_movies = find_recommendation(movie_name, data)
-    # movie_name = movie_name.upper()
-    # movie_details = {}
-
-    # if type(recommended_movies) == type('string'): # no such movie found in the database
-    #     print("NO MOVIES FOUND!..")
-    # else:
-
-        # tmdb_movie_object = Movie()
-        # result = tmdb_movie_object.search(movie_name)
-
-        # # get movie id and movie title
-        # movie_id = result[0].id
-        # movie_title = result[0].title
-
-        # # making API call
-        # response = requests.get('https://api.themoviedb.org/3/movie/{}?api_key={}'.format(movie_id,tmdb.api_key))
-        # movie_json = response.json()
-        # imdb_id = movie_json['imdb_id']
-        # poster_path = movie_json['poster_path']
-        # img_path = 'https://image.tmdb.org/t/p/original{}'.format(poster_path)
-        # movie_details['movie_name'] = movie_json['title']
-        # movie_details['image'] = img_path
-
-        # # getting list of genres form json
-        # genre = list_of_genres(movie_json['genres'])
-        # movie_details['genre'] = genre
-
-        # # getting votes with comma as thousands separators
-        # vote_count = "{:,}".format(movie_json['vote_count'])
-        # movie_details['vote count'] = vote_count
-        
-        # # convert date to readable format (eg. 10-06-2019 to June 10 2019)
-        # release_day,release_month,release_year = date_convert(movie_json['release_date'])
-        # release_date = "{} {},{}".format(release_month,release_day,release_year)
-        # movie_details['Date'] = release_date
-
-        # # getting the status of the movie (released or not)
-        # release_status = movie_json['status']
-        # movie_details['Released status'] = release_status
-
-        # # convert minutes to hours minutes (eg. 148 minutes to 2 hours 28 mins)
-        # runtime = movie_runtime(movie_json['runtime'])
-        # movie_details['runtime'] = runtime
-
-    # print()    
-    # print("---Movie Details---")
-    # for key,value in movie_details.items():
-    #     print("{} : {}".format(key,value))
-
-    # print()
-    # print()
-
-    # print("----Top Recommendation----")
-    # for movie_title in recommended_movies:
-    #     movie_list = tmdb_movie_object.search(movie_title)
-    #     movie_id = movie_list[0].id
-    #     response = requests.get('https://api.themoviedb.org/3/movie/{}?api_key={}'.format(movie_id,tmdb.api_key))
-    #     movie_json = response.json()
-    #     img_path = 'https://image.tmdb.org/t/p/original{}'.format(movie_json['poster_path'])
-    #     print("{} : {}".format(movie_title,img_path))
-
-    # print()
